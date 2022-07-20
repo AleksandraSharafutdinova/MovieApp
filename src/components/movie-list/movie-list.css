@@ -1,0 +1,16 @@
+.movie-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .movie-list {
+        flex-direction: column;
+    }
+}
+
+
