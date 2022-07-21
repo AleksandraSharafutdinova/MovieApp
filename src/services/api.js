@@ -5,27 +5,27 @@ export default class Api {
     apiKey = 'e2dbf1122383f3ac5d60d7829adf231f';
 
 
-    async getResource(url) {
-        const res = await fetch(`${this.apiBase}${url}${this.apiKey}`);
+    async getResource(url, query) {
+        const res = await fetch(`${this.apiBase}${url}${this.apiKey}&query=${query}`);
 
         if (!res.ok) {
             throw new Error(`Could not fetch ${url}` +
-            `, received ${res.status}`)
+                `, received ${res.status}`)
         }
         return await res.json();
     }
 
-    async getFightClub() {
-        const res = await this.getResource(`movie/550?api_key=`);
-        return res;
+    async getMovie(query) {
+       const res = await this.getResource(`search/movie?api_key=`,query);
+       console.log(res.results) ;
     }
 }
-
-
 // const swapi = new Api();
 //  swapi.getFightClub().then((body) => {
-//     console.log(body.overview);
+//     console.log(body);
 //  });
+//movie/550?api_key=
+
 
 
 
