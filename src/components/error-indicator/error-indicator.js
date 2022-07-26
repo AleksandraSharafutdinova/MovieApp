@@ -8,7 +8,7 @@ const ErrorIndicator = () => {
     }
     return (
         <div className="error">
-            <Alert message="Something went wrong" type="error" closable onClose={onClose}/>
+            <Alert message="Что-то пошло не так. Проверьте Ваше интернет-соединение." type="error" closable onClose={onClose}/>
         </div>
     )
 };

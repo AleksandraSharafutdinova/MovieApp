@@ -76,7 +76,7 @@
 
 .rate {
     display: flex;
-    border: 3px solid #E90000;
+    flex-shrink: 0;
     width: 35px;
     height: 35px;
     border-radius: 50%;
@@ -86,6 +86,22 @@
     align-items: center;
     justify-self: end;
     align-self: start;
+}
+
+.bad {
+    border: 3px solid #E90000;
+}
+
+.normal {
+    border: 3px solid #E97E00;
+}
+
+.better {
+    border: 3px solid #E9D100;
+}
+
+.great {
+    border: 3px solid #66E900;
 }
 
 .flex {
@@ -102,5 +118,11 @@
 @media (max-width: 768px) {
     .ant-rate {
         font-size: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-tags {
+        margin-left: 65px;
     }
 }

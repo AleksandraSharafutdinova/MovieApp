@@ -4,45 +4,7 @@ import {format} from "date-fns";
 
 import './movie-card.css'
 
-import Api from "../../services/api";
-
 export default class MovieCard extends Component {
-
-    apiService = new Api();
-
-    state = {
-        title: null,
-        rate: null,
-        overview: null,
-        date: null,
-        post: null,
-    }
-
-    constructor() {
-        super();
-        this.updateMovie()
-    }
-
-    // updateMovie() {
-    //     const res = this.apiService.getMovie('lol')
-    //     console.log(res)
-    // }
-
-    updateMovie() {
-        this.apiService.getMovie('lol').then((movie) => {
-            this.setState({
-                title: movie.original_title,
-                // overview: movie.overview,
-                // rate: movie.vote_average,
-                // date: movie.release_date,
-                // post: movie.poster_path,
-            })
-        })
-    }
-
-    onRatedMovies = (value) => {
-        console.log(value)
-    }
 
     getDate = (dateRelease) => {
         if (dateRelease === null || dateRelease === "" || dateRelease === undefined) {
@@ -53,7 +15,7 @@ export default class MovieCard extends Component {
     }
 
     render() {
-        const { title, rate, date, overview, post} = this.state;
+        const { title, rate, date, overview, post, onRatedMovies} = this.props;
 
         const filmGenres = (
             <div>
@@ -68,8 +30,21 @@ export default class MovieCard extends Component {
                 </Tag>
             </div>
         );
+        // От 0 до 3 - #E90000 bad
+        // От 3 до 5 - #E97E00 normal
+        // От 5 до 7 - #E9D100 better
+        // Выше 7 - #66E900 great
 
-
+        let classNames = 'rate';
+        if (rate <= 3) {
+            classNames += ' bad'
+        } else if (rate > 3 && rate < 5) {
+            classNames += ' normal'
+        } else if (rate >= 5 && rate < 7) {
+            classNames += ' better'
+        } else if (rate >= 7) {
+            classNames += ' great'
+        }
 
 
         return (
@@ -78,9 +53,7 @@ export default class MovieCard extends Component {
                 <div className='movie-description'>
                     <div className='flex'>
                         <div className='title'>{title}</div>
-                        <div className='genresClass'>
-                            <span className='rate'>{rate}</span>
-                        </div>
+                        <span className={classNames}>{rate}</span>
                     </div>
                     <div className='movie-date'>{this.getDate(date)}</div>
                     <div className='card-tags'>
@@ -89,7 +62,7 @@ export default class MovieCard extends Component {
                     <div className='info'>{overview}</div>
                     <Rate className='rate-tab'
                           count={10}
-                          onChange={this.onRatedMovies}>
+                          onChange={onRatedMovies} >
                     </Rate>
                 </div>
             </div>

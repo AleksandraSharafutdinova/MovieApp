@@ -1,6 +1,7 @@
 .body {
     display: flex;
     justify-content: center;
+    height: 100%;
 }
 .wrapper {
     background-color: white;
@@ -14,5 +15,16 @@
 @media (max-width: 768px) {
     .wrapper {
         width: 400px;
+    }
+}
+
+.ant-alert {
+    width: 650px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .ant-alert {
+        width: 350px;
     }
 }

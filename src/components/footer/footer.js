@@ -1,16 +1,20 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { Pagination } from 'antd';
 
 import './footer.css'
 
-export default class Footer extends Component {
+const Footer = ({moviesPerPage, totalMovies, onClickPage, currentPage}) => {
 
-    render() {
-
-        return (
-            <div className='footer'>
-                <Pagination size="small" total={50} />
-            </div>
-        )
+    const pageNumber =[];
+    for (let i = 1; i <= Math.ceil(totalMovies / moviesPerPage); i++) {
+        pageNumber.push(i)
     }
+
+    return (
+            <div className='footer'>
+                <Pagination size='small' total={pageNumber.length} current={currentPage} onChange={onClickPage} />
+            </div>
+    )
 }
+
+export default Footer;
