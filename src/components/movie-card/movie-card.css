@@ -121,6 +121,10 @@
     }
 }
 
+.ant-tag {
+    white-space: break-spaces;
+}
+
 @media (max-width: 768px) {
     .card-tags {
         margin-left: 65px;

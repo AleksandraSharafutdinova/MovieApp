@@ -1,39 +1,41 @@
 import React, {Component} from 'react';
 
-import Header from '../header/header';
 import SearchPanel from "../search-panel";
 import MovieList from "../movie-list";
 import Footer from "../footer";
 import Spinner from "../spinner";
 import ErrorIndicator from "../error-indicator";
 import Api from "../../services/api";
-
 import './app.css'
+import { GetGenresProvider } from "../../services/api-services-context";
 
-import {Alert} from 'antd';
+import { Alert, Tabs } from 'antd';
+const { TabPane } = Tabs;
 
 /* eslint-disable no-unused-expressions */
 export default class App extends Component {
 
     apiService = new Api();
+    storage = window.localStorage;
 
     state = {
         movies: [],
         loading: false,
         error: false,
         notification: false,
-        tabPane: '1',
-        // Нужно что-то сделать с переключением табсов
         currentPage: 1,
         totalPages: null,
         query: null,
         moviesPerPage: 10,
-        totalMovies: null
-
+        totalMovies: null,
+        ratedByStars: [],
+        genres: {}
     }
 
     onChangingPages = async (curr=1) => {
-        //сделать сюда загрузку
+        this.setState({
+            loading: true,
+        })
         const movieListPages = await this.apiService.nextPage(this.state.query, curr)
         this.setState(() => ({
             movies: movieListPages.results,
@@ -43,11 +45,31 @@ export default class App extends Component {
             query: this.state.query,
             currentPage: curr,
         }))
-        console.log(movieListPages)
     }
 
-    onRatedMovies = (value) => {
-        console.log(value)
+    onRatedByStars = async (id) => {
+
+        const value = this.storage.getItem(id)
+
+        await this.setState(({movies}) => {
+            const moviesList = movies.map((el) => {
+                const card = {...el}
+                if (card.id === id) {
+                    if (!card.ratedByStars) {
+                        card.ratedByStars = value
+                    }
+                }
+                this.storage.setItem('movies', JSON.stringify(this.state.movies))
+                return card;
+            })
+
+            const ratedData = moviesList.filter(el => el.ratedByStars);
+
+            return {
+                movies: moviesList,
+                ratedByStars: ratedData
+            }
+        })
     }
 
     onSearch = async (e) => {
@@ -56,6 +78,7 @@ export default class App extends Component {
         });
         try {
             const movieList = await this.apiService.getMovie(JSON.stringify(e.target.value));
+            const genresRes = await this.apiService.getGenre();
             this.setState(() => ({
                 movies: movieList.results,
                 loading: false,
@@ -63,7 +86,8 @@ export default class App extends Component {
                 totalPages: movieList.total_pages,
                 totalMovies: movieList.total_results,
                 query: e.target.value,
-                //currentPage: 1
+                currentPage: 1,
+                genres: genresRes
 
             }))
             if (movieList.total_results === 0) {
@@ -92,59 +116,39 @@ export default class App extends Component {
         })
     }
 
-    // changeTab = (key) => {
-    //         if (key === '2') {
-    //         console.log('2')
-    //         } else {
-    //         console.log('1')
-    //         }
-    // }
-
-    // getRatedMovies = () => {
-    //     console.log('hello')
-    // }
-
-
-    changeTab = (key) => {
-        if (key === '2') {
-            this.setState(
-                {
-                    tabPane: key,
-                },
-                () => {
-                    this.onRatedMovies();
-                }
-            );
-        } else {
-            this.setState(
-                {
-                    tabPane: key,
-                },
-            );
-        }
-    };
-
     render() {
 
-        const {loading, error, movies, notification} = this.state;
+        const {loading, error, movies, notification, ratedByStars} = this.state;
 
         const spinner = loading ? <Spinner /> : null;
         const errorMessage = error ? <ErrorIndicator /> : null;
         const notifications = notification ? <Alert message="Фильм не найден" type="warning" /> : null;
 
     return (
-        <div className='wrapper'>
-            <Header changeTab={this.changeTab} />
-            <SearchPanel onSearch={this.onSearch} />
-            {spinner}
-            {errorMessage}
-            {notifications}
-            <MovieList movies={movies}
-                       onRatedMovies={this.onRatedMovies}/>
-            <Footer onClickPage={this.onChangingPages}
-                    moviesPerPage={this.state.moviesPerPage}
-                    totalMovies={this.state.totalMovies} />
-        </div>
+        <GetGenresProvider value={this.state.genres}>
+            <div className='wrapper'>
+                <Tabs defaultActiveKey="1" centered>
+                    <TabPane tab="Search" key="1">
+                        <SearchPanel onSearch={this.onSearch} />
+                        {spinner}
+                        {errorMessage}
+                        {notifications}
+                        <MovieList movies={movies}
+                                   onRatedByStars={this.onRatedByStars}
+                        />
+                        <Footer onClickPage={this.onChangingPages}
+                                moviesPerPage={this.state.moviesPerPage}
+                                totalMovies={this.state.totalMovies} />
+                    </TabPane>
+                    <TabPane tab="Rated" key="2">
+                        {spinner}
+                        <MovieList movies={ratedByStars}
+                                   onRatedByStars={this.onRatedByStars}/>
+                    </TabPane>
+                </Tabs>
+            </div>
+        </GetGenresProvider>
     )
+    }
 }
-}
+

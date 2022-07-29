@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Input } from 'antd';
 import {debounce} from "lodash";
+import PropTypes from 'prop-types';
 
 import './search-panel.css';
 
@@ -17,3 +18,11 @@ render() {
         )
     }
 };
+
+SearchPanel.defaultProps = {
+    onSearch: () => {},
+}
+
+SearchPanel.propTypes ={
+    onSearch: PropTypes.func,
+}

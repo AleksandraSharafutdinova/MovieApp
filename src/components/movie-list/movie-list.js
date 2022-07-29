@@ -1,9 +1,10 @@
 import React from 'react';
 import MovieCard from "../movie-card";
+import PropTypes from 'prop-types';
 
 import './movie-list.css';
 
-const MovieList = ({movies, onRatedMovies}) => {
+const MovieList = ({movies, onRatedByStars}) => {
 
     const elements = movies.map((item) => {
 
@@ -18,7 +19,7 @@ const MovieList = ({movies, onRatedMovies}) => {
                     rate={item.vote_average}
                     movies={movies}
                     id={item.id}
-                    onRatedMovies={onRatedMovies}
+                    onRatedByStars={onRatedByStars}
                     />
             </div>
         )
@@ -29,6 +30,16 @@ const MovieList = ({movies, onRatedMovies}) => {
             {elements}
         </div>
     )
+}
+
+MovieList.defaultProps = {
+    movies: [],
+    onRatedByStars: () => {},
+}
+
+MovieList.propTypes = {
+    movies: PropTypes.arrayOf(Object),
+    onRatedByStars: PropTypes.func
 }
 
 export default MovieList;

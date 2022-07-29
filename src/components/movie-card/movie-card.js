@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import { Rate, Tag } from 'antd';
 import {format} from "date-fns";
+import PropTypes from 'prop-types';
+import { GetGenresConsumer } from "../../services/api-services-context";
 
 import './movie-card.css'
 
@@ -14,22 +16,22 @@ export default class MovieCard extends Component {
         return res;
     }
 
-    render() {
-        const { title, rate, date, overview, post, onRatedMovies} = this.props;
+    onRatedMovies = (value) => {
+        localStorage.setItem(this.props.id, JSON.stringify(value))
+        this.props.onRatedByStars(this.props.id)
+    }
 
-        const filmGenres = (
-            <div>
-                <Tag className="card-genres-tag" >
-                    Жанр
-                </Tag>
-                <Tag className="card-genres-tag" >
-                    Ужасы
-                </Tag>
-                <Tag className="card-genres-tag" >
-                    Триллер
-                </Tag>
-            </div>
-        );
+    getGenre = (arr, num) => {
+        const res2 = arr.filter(el => num.includes(el.id));
+        const res3 = res2.map(elem => elem.name)
+        return res3.join(', ')
+    }
+
+    render() {
+        const { title, rate, date, overview, post, genre} = this.props;
+
+
+
         // От 0 до 3 - #E90000 bad
         // От 3 до 5 - #E97E00 normal
         // От 5 до 7 - #E9D100 better
@@ -57,15 +59,42 @@ export default class MovieCard extends Component {
                     </div>
                     <div className='movie-date'>{this.getDate(date)}</div>
                     <div className='card-tags'>
-                        {filmGenres}
+                        <GetGenresConsumer>
+                            {value =>
+                                <Tag>
+                                    {this.getGenre(value, genre)}
+                                </Tag>
+                            }
+                        </GetGenresConsumer>
                     </div>
                     <div className='info'>{overview}</div>
                     <Rate className='rate-tab'
                           count={10}
-                          onChange={onRatedMovies} >
+                          onChange={this.onRatedMovies} >
                     </Rate>
                 </div>
             </div>
         )
     }
+}
+
+
+MovieCard.defaultProps = {
+    post: '',
+    title: '',
+    rate: 0,
+    genre: [],
+    overview: '',
+    id: 0,
+    date: '',
+}
+
+MovieCard.propTypes = {
+    post: PropTypes.string,
+    title: PropTypes.string,
+    rate: PropTypes.number,
+    genre: PropTypes.arrayOf(Object),
+    overview: PropTypes.string,
+    id: PropTypes.number,
+    date: PropTypes.string,
 }
