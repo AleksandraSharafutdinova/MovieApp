@@ -1,1 +1,1 @@
-https://movieapp-gold-seven.vercel.app/
+https://movieapp-nu.vercel.app/
