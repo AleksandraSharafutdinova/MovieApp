@@ -15,10 +15,16 @@ export default class Api {
         return await res.json();
     };
 
+    async getReturn () {
+        const res = await this.getResource(`search/movie?api_key=`, 'return');
+        return res
+    }
+
     async getMovie(query) {
        const res = await this.getResource(`search/movie?api_key=`,query);
        return res;
     };
+
 
     async nextPage(query, pageNum) {
         const res = await fetch (`${this.apiBase}search/movie?api_key=${this.apiKey}&query=${query}&page=${pageNum}`);

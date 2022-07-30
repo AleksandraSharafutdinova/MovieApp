@@ -19,6 +19,7 @@ export default class MovieCard extends Component {
     onRatedMovies = (value) => {
         localStorage.setItem(this.props.id, JSON.stringify(value))
         this.props.onRatedByStars(this.props.id)
+
     }
 
     getGenre = (arr, num) => {
@@ -28,7 +29,7 @@ export default class MovieCard extends Component {
     }
 
     render() {
-        const { title, rate, date, overview, post, genre} = this.props;
+        const { title, rate, date, overview, post, genre, ratingStars} = this.props;
 
 
 
@@ -70,7 +71,9 @@ export default class MovieCard extends Component {
                     <div className='info'>{overview}</div>
                     <Rate className='rate-tab'
                           count={10}
-                          onChange={this.onRatedMovies} >
+                          value={ratingStars}
+                          onChange={this.onRatedMovies}
+                    >
                     </Rate>
                 </div>
             </div>

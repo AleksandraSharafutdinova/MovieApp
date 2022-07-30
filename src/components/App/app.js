@@ -29,10 +29,11 @@ export default class App extends Component {
         moviesPerPage: 10,
         totalMovies: null,
         ratedByStars: [],
-        genres: {}
+        genres: {},
     }
 
     onChangingPages = async (curr=1) => {
+        window.scrollTo({top: 0})
         this.setState({
             loading: true,
         })
@@ -43,7 +44,7 @@ export default class App extends Component {
             totalPages: movieListPages.total_pages,
             totalMovies: movieListPages.total_results,
             query: this.state.query,
-            currentPage: curr,
+            currentPage: curr
         }))
     }
 
@@ -55,15 +56,15 @@ export default class App extends Component {
             const moviesList = movies.map((el) => {
                 const card = {...el}
                 if (card.id === id) {
-                    if (!card.ratedByStars) {
-                        card.ratedByStars = value
+                    if (!card.ratingStars) {
+                        card.ratingStars = value
                     }
                 }
                 this.storage.setItem('movies', JSON.stringify(this.state.movies))
                 return card;
             })
 
-            const ratedData = moviesList.filter(el => el.ratedByStars);
+            const ratedData = moviesList.filter(el => el.ratingStars);
 
             return {
                 movies: moviesList,
@@ -102,11 +103,41 @@ export default class App extends Component {
         //e.target.reset(); с помощью этой штуки можно самоотчистить поле ввода, но я так и не поняла, куда ее пихать
     };
 
+
     onNotification = () => {
         this.setState({
             notification: true
         })
     };
+
+    doReturn = async () => {
+        this.setState({
+            loading: true
+        });
+        try {
+            const res = await this.apiService.getReturn();
+            const genresRes = await this.apiService.getGenre();
+            this.setState(() => ({
+                movies: res.results,
+                loading: false,
+                notification: false,
+                totalPages: res.total_pages,
+                totalMovies: res.total_results,
+                currentPage: 1,
+                genres: genresRes
+            }))
+            //console.log(res)
+        } catch {
+            this.setState({
+                error: true,
+                loading: false
+            })
+        }
+    }
+
+    componentDidMount() {
+        this.doReturn()
+    }
 
 
     onError = () => {
@@ -138,7 +169,8 @@ export default class App extends Component {
                         />
                         <Footer onClickPage={this.onChangingPages}
                                 moviesPerPage={this.state.moviesPerPage}
-                                totalMovies={this.state.totalMovies} />
+                                totalMovies={this.state.totalMovies}
+                                />
                     </TabPane>
                     <TabPane tab="Rated" key="2">
                         {spinner}

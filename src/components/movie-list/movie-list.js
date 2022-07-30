@@ -19,6 +19,7 @@ const MovieList = ({movies, onRatedByStars}) => {
                     rate={item.vote_average}
                     movies={movies}
                     id={item.id}
+                    ratingStars={item.ratingStars}
                     onRatedByStars={onRatedByStars}
                     />
             </div>
